@@ -27,22 +27,6 @@ app.options('*', cors());
 
 app.use('/api', accountRoutes);
 
-app.use(
-  express.static(
-    path.join(__dirname, '../../..', 'react-node-odev/frontend/dist'),
-  ),
-);
-
-app.get('*', (req, res) => {
-  res.sendFile(
-    path.join(
-      __dirname,
-      '../../..',
-      'react-node-odev/frontend/dist/index.html',
-    ),
-  );
-});
-
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
