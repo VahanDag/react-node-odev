@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3001;
 app.use(
   cors({
     origin: [
-      'https://company-tracker-frontend.netlify.app',
+      'https://harmonious-biscotti-244d44.netlify.app/',
       'http://localhost:5173',
     ],
     credentials: true,
