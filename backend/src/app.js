@@ -12,9 +12,8 @@ const PORT = process.env.PORT || 3001;
 app.use(
   cors({
     origin: [
+      'https://company-tracker-frontend.netlify.app',
       'http://localhost:5173',
-      'http://localhost:3001',
-      'https://2a0c-95-5-184-104.ngrok-free.app',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
