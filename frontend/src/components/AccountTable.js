@@ -1,18 +1,29 @@
-import 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const AccountTable = ({ accounts }) => {
+  const [expandedAccounts, setExpandedAccounts] = useState({});
+
   const formatNumber = (number) => {
+    const absoluteNumber = Math.abs(number);
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
       currency: 'TRY',
-    }).format(number);
+    }).format(absoluteNumber);
   };
 
   const getColorClass = (totalDebt) => {
-    if (totalDebt > 1000000) return 'bg-red-100';
-    if (totalDebt > 500000) return 'bg-yellow-100';
+    const absoluteDebt = Math.abs(totalDebt);
+    if (absoluteDebt > 1000000) return 'bg-red-100';
+    if (absoluteDebt > 500000) return 'bg-yellow-100';
     return 'bg-green-100';
+  };
+
+  const toggleExpand = (code) => {
+    setExpandedAccounts((prev) => ({
+      ...prev,
+      [code]: !prev[code],
+    }));
   };
 
   const groupAccounts = (accounts) => {
@@ -43,13 +54,17 @@ const AccountTable = ({ accounts }) => {
       if (level3) {
         grouped[level1].children[level2].children[level3] = {
           code: level3,
-          totalDebt: account.totalDebt,
+          totalDebt: Math.abs(account.totalDebt),
         };
-        grouped[level1].children[level2].totalDebt += account.totalDebt;
+        grouped[level1].children[level2].totalDebt += Math.abs(
+          account.totalDebt,
+        );
       } else if (level2) {
-        grouped[level1].children[level2].totalDebt += account.totalDebt;
+        grouped[level1].children[level2].totalDebt += Math.abs(
+          account.totalDebt,
+        );
       }
-      grouped[level1].totalDebt += account.totalDebt;
+      grouped[level1].totalDebt += Math.abs(account.totalDebt);
     });
 
     return grouped;
@@ -64,9 +79,13 @@ const AccountTable = ({ accounts }) => {
         <div
           className={`p-4 flex justify-between items-center ${getColorClass(
             account.totalDebt,
-          )} border-b-2 border-gray-200`}
+          )} border-b-2 border-gray-200 cursor-pointer`}
+          onClick={() => toggleExpand(account.code)}
         >
-          <div>
+          <div className="flex items-center">
+            <span className="mr-2">
+              {expandedAccounts[account.code] ? '−' : '+'}
+            </span>
             <span className="font-bold text-lg">{account.code}</span>
             <span className="ml-4 text-gray-600">Ana Hesap</span>
           </div>
@@ -75,11 +94,18 @@ const AccountTable = ({ accounts }) => {
           </span>
         </div>
 
-        {account.children &&
+        {expandedAccounts[account.code] &&
+          account.children &&
           Object.values(account.children).map((child) => (
             <div key={child.code} className="border-l-4 border-blue-500">
-              <div className="ml-4 p-3 flex justify-between items-center hover:bg-gray-50">
-                <div>
+              <div
+                className="ml-4 p-3 flex justify-between items-center hover:bg-gray-50 cursor-pointer"
+                onClick={() => toggleExpand(child.code)}
+              >
+                <div className="flex items-center">
+                  <span className="mr-2">
+                    {expandedAccounts[child.code] ? '−' : '+'}
+                  </span>
                   <span className="font-semibold">{child.code}</span>
                   <span className="ml-4 text-gray-500">Alt Hesap</span>
                 </div>
@@ -88,7 +114,8 @@ const AccountTable = ({ accounts }) => {
                 </span>
               </div>
 
-              {child.children &&
+              {expandedAccounts[child.code] &&
+                child.children &&
                 Object.values(child.children).map((grandChild) => (
                   <div
                     key={grandChild.code}

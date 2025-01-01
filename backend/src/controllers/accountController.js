@@ -9,7 +9,9 @@ class AccountController {
 
       const formattedAccounts = accounts.map((account) => ({
         accountCode: account.hesapKodu,
-        totalDebt: parseFloat(account.borc) - parseFloat(account.alacak),
+        totalDebt: Math.abs(
+          parseFloat(account.borc) - parseFloat(account.alacak),
+        ),
         level: account.hesapKodu.split('.').length,
         parentCode: account.hesapKodu.split('.').slice(0, -1).join('.') || null,
       }));
